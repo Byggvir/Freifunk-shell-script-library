@@ -1,0 +1,183 @@
+#!/bin/bash
+
+#
+# Thomas Arend, Rheinbach
+# (c) 2019 
+# GPL 3.0
+#
+# Make ansible role directory structure
+#
+
+[ $# -eq 0 ] && ( usage  $0 rolename ; exit 1) 
+
+AnsibleROLE=$1
+CREATOR=$(grep "^$USER:" /etc/passwd | awk -F ':' '{print $5}' | sed 's#,##g')
+CREATED=$(date +%F)
+
+mkdir -p "./roles/${AnsibleROLE}"
+
+[ ! -e "./README.md" ] && cat > "./README.md" <<EOF
+# Playbook
+
+Erstellt von **$CREATOR** am *$CREATED*
+
+# Achtung, dies ist ein **Muster!**
+
+*(Bitte eine Beschreibung einfügen! Weil: Gute Doku hilft!)*
+
+# Kurzbeschreibung
+
+Mit diesem Playbook wird ...
+
+Das Playbook enthält folgende Rollen:
+
+- ${AnsibleROLE}
+- ...
+
+**Näheres** zu den *Rollen* findest du **im README.md** im Verzeichnis *roles*.
+
+Aufruf:
+
+    ansible-playbook playbooks/myplaybook.yaml
+
+EOF
+
+[ ! -e "./roles/README.md" ] && cat > "./roles/README.md" <<EOF
+# Rollen im Playbook
+
+Erstellt von **$CREATOR** am *$CREATED*
+
+# Achtung, dies ist ein **Muster!**
+
+*(Bitte eine Beschreibung einfügen! Weil: Gute Doku hilft!)*
+
+# Kurzbeschreibung
+
+Mit dieses Playbook wird ...
+
+Das Playbook enthält folgende Rollen:
+
+- ${AnsibleROLE}
+- ...
+
+# ${AnsibleROLE}
+
+Die Rolle dient der ...
+
+EOF
+
+[ ! -e "./roles/${AnsibleROLE}/README.md" ] && cat > "./roles/${AnsibleROLE}/README.md" <<EOF
+# Rolle: ${AnsibleROLE}
+
+Erstellt von **$CREATOR** am *$CREATED*
+
+# Achtung, dies ist ein **Muster!**
+
+*(Bitte eine Beschreibung einfügen! Weil: Gute Doku hilft!)*
+
+# Kurzbeschreibung
+
+Mit dieser Rolle wird ...
+
+## Voraussetzungen
+
+Die Rolle setzt voraus, dass
+
+- Erstens
+- Zweitens
+- ...
+
+## Unterverzeichnisse
+
+Die Rolle verwendet folgende Unterverzeichnisse
+
+- tasks:        contains the main list of tasks to be executed by the role.
+- handlers:     contains handlers, which may be used by this role or even anywhere outside this role.
+- defaults:     default variables for the role.
+- vars:         other variables for the role.
+- files:        contains files which can be deployed via this role.
+- templates:    contains templates which can be deployed via this role.
+- meta:         defines some meta data for this role.
+
+### tasks
+
+Die Rolle ${AnsibleROLE} führt Tasks aus, die wie folgt gruppiert sind:
+
+- Installation
+- Konfiguration
+- Neustart der Dienste, des Rechners
+
+**Näheres** zu den *tasks* findest du **im README.md** im Verzeichnis *tasks*.
+
+### handlers
+
+Die Fehlerbehandlung wird durch Handler in *handlers* übernommen. 
+
+**Näheres** zu den *handlers* findest du **im README.md** im Verzeichnis *handlers*.
+
+### defaults / vars
+
+Die Rolle ${AnsibleROLE} nutzt folgende Variablen in *defaults* und / oder *vars*:
+
+Die Rolle ${AnsibleROLE} nutzt folgende Variablen in vars:
+
+**Näheres** zu den *defaults* und *variablen* findest du **im README.md** im Verzeichnis *defaults* / *handlers*.
+
+### templates
+
+Templates im *j2* werden durch Ansible anhand der Varibalen und des Programmcodes in den Templates modifiziert und als Dateien auf das Zielsystem kopiert.
+
+Die Rolle ${AnsibleROLE} nutzt folgende Templates in *templates*:
+
+- A.j2
+- B.j2
+- ...
+
+**Näheres** zu den *defaults* und *variablen* findest du **im README.md** im Verzeichnis *defaults* / *handlers*.
+
+### files
+
+Die Rolle ${AnsibleROLE} nutzt folgende Dateien in *files*:
+
+Dateien werden 1:1 in der Regel 1:1 auf den Zielserver kopiert.
+
+**Näheres** zu den *Dateien* findest du **im README.md** im Verzeichnis *files*.
+
+### meta
+
+Die Rolle ${AnsibleROLE} nutzt folgende Meta-Daten:
+
+**Näheres** zu den *Meta-Daten* findest du **im README.md** im Verzeichnis *meta*.
+
+EOF
+
+for DIR in tasks handlers defaults vars files templates meta
+do
+  mkdir -p "./roles/${AnsibleROLE}/$DIR"
+  [ ! -e "./roles/${AnsibleROLE}/${DIR}/README.md" ] && cat > "./roles/${AnsibleROLE}/$DIR/README.md" <<EOF
+# Verzeichnis $DIR
+
+Erstellt von **$CREATOR** am *$CREATED*
+
+# Achtung, dies ist ein **Muster!**
+
+*(Bitte eine Beschreibung einfügen! Weil: Gute Doku hilft!)*
+
+EOF
+
+done
+
+for DIR in tasks handlers defaults vars meta
+do
+
+[ ! -e "./roles/${AnsibleROLE}/${DIR}/main.yaml" ] && cat > "./roles/${AnsibleROLE}/${DIR}/main.yaml" <<EOF
+---
+# Erstellt von: $CREATOR
+# Erstellt am:  $CREATED
+
+# Ab hier muss noch dein Code hinein
+
+...
+EOF
+
+done

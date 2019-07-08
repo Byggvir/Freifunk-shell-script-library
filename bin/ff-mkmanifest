@@ -1,0 +1,37 @@
+#!/bin/sh
+# Thomas Arend
+# 03.10.2016
+#
+# Zufügen einen Targets
+
+GLUONDIR=$HOME/gluon
+USB=$2
+BRANCH=stable
+
+if [ -z "$1" ]
+then
+  GLUONVER="master"
+  BRANCH="master"
+else
+  GLUONVER=$1 
+fi
+
+echo "VERSION (gluon): $GLUONVER"
+
+if [ -z "$2" -o "$GLUONVER" = "master" ]
+then
+  SITEVER=${GLUONVER}
+else
+  SITEVER=${GLUONVER}-$2 
+  BRANCH=${BRANCH}$2
+fi
+
+echo "VERSION (site): $SITEVER"
+echo "BRANCH: $BRANCH"
+
+pushd "${GLUONDIR}/${SITEVER}"
+
+make manifest GLUON_BRANCH=${BRANCH} GLUON_PRIORITY=1
+./contrib/sign.sh $HOME/.ecdsa/thomas.secret output/images/sysupgrade/${BRANCH}.manifest
+
+popd

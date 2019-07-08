@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Delete ssh-key from known_hosts
+
+die() {
+	echo $1
+	exit 1
+}
+
+help_msg() {
+    echo "Flash Router at IP-Address <IP-ADDRES>"
+	echo "Usage: $0 <IP-ADDRESS>"
+	echo "Default 10.152.112.1"
+	echo "Sysupgrade images are assumed in the current directory"
+	
+	exit 1
+}
+
+if [ "$1" == "-h" ]
+then
+	help_msg
+fi
+
+echo sysupgrade /fix Freifunk-Router with new image
+
+if [ -n "$1" ] 
+then
+	IP=$1
+else
+	IP=10.152.112.1
+fi
+
+echo $IP
+
+# scp requires brakets ([...]) around the IPv6-address,
+# IPv4 addresses with brakets raise an error.
+# If the address contains at least one ':' we put the address in brakets
+# and store it in scpIP
+
+scpIP=$(echo $IP | sed '/:/ s#\(.*\)#[\1]#')
+
+echo $scpIP
+
+ssh-keygen -f "/home/thomas/.ssh/known_hosts" -R "$IP"
+
+ssh root@$IP 'sync; cat /proc/sys/kernel/hostname ; echo 3 > /proc/sys/vm/drop_caches'
+
+MODEL=$(ssh root@$IP "lua -e 'print(require(\"platform_info\").get_image_name())'")
+
+echo $MODEL
+
+scp $(ls *${MODEL}*) root@$scpIP:/tmp/sysup.bin
+
+ssh root@$IP 'sync; echo 3 > /proc/sys/vm/drop_caches ; sysupgrade -n /tmp/sysup.bin'
+
+# Nach der Neuinstalltion mit -n hat der Router einen neuen ssh-host-key.
+# Wenn es die lokal Node Adresse ist, brauchen wir den Key auch nicht mehr.
+# Deshalb löschen wir ihn vorsorglich.
+
+ssh-keygen -f "/home/thomas/.ssh/known_hosts" -R "$IP"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+NODE=zingsheim-31.r.ffrhb.de
+
+ssh root@$NODE 'gluon-neighbour-info -i bat0 -p 1001 -d ff02:0:0:0:0:0:2:1001 -r nodeinfo' >nodes.json

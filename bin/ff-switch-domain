@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo Switch router to new domain
+echo "Usage: $0 <newdom>\n"
+echo "Default: dom14old\n"
+echo "Use with care!"
+
+if [ -n "$1" ] 
+then
+	DOM=$1
+else
+	DOM='dom14old'
+fi
+
+if [ -n "$2" ] 
+then
+	IP=$2
+else
+	IP=10.152.112.1
+fi
+
+echo $IP
+
+
+ssh root@$IP 'uci set gluon.core.domain="'$DOM'" ; gluon-reconfigure; reboot; exit'

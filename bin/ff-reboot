@@ -1,0 +1,9 @@
+#!/bin/bash
+
+ssh-add -l >/dev/null || $HOME/bin/ssh-idadd
+
+NODE=`xclip -o  | tr -d " \t"`
+echo Reboot --${NODE}--
+
+ssh root@$NODE 'reboot ; exit'
+
